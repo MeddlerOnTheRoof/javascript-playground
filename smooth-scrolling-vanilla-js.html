@@ -140,4 +140,83 @@
             return -c / 2 * (t * (t - 2) - 1) + b
         }
     }
+
+    /*
+        testing jump function...
+        unncessary in framework like Angular2 as you can just use (click) binding
+        on elements you want to utilize this for and set hash that way, or alter the targeting in other ways
+        important parts to pick up on here is the following:
+            - use of easing for smooth scrolling
+            - looping through easing calculation
+            - fixing-skip-to-content-links for tab behavior
+            - good use of options obj passed into jump to extend behavior
+     */
+    initSmoothScrolling();
+
+    function initSmoothScrolling() {
+        if (!isCssSmoothScrollSupported()) {
+            console.warn('CSS smooth scrolling not supported!');
+            return;
+        }
+        
+        var duration = 400;
+        
+        var pageUrl = location.hash
+            ? stripHash(location.href)
+            : location.href;
+        
+        delegatedLinkHijacking();
+        
+        function delegatedLinkHijacking() {
+            document.body.addEventListener('click', onClick, false);
+            
+            function onClick(e) {
+                console.log('onClick called...');
+    
+                if (!isInPageLink(e.target))
+                    return;
+                
+                e.stopPropagation();
+                e.preventDefault();
+                
+                console.log('calling jump fx...');
+    
+                jump(e.target.hash, {
+                    duration: duration,
+                    callback: function() {
+                        setFocus(e.target.hash);
+                    }
+                });
+            }
+        }
+    
+        function isInPageLink(n) {
+            return n.tagName.toLowerCase() === 'a' 
+                && n.hash.length > 0
+                && stripHash(n.href) === pageUrl
+            ;
+        }
+            
+        function stripHash(url) {
+            return url.slice(0, url.lastIndexOf('#'));
+        }
+        
+        function isCssSmoothScrollSupported() {
+            return 'scrollBehavior' in document.documentElement.style;
+        }
+    
+        // Adapted from:
+        // https://www.nczonline.net/blog/2013/01/15/fixing-skip-to-content-links/
+        function setFocus(hash) {
+            var element = document.getElementById(hash.substring(1));
+    
+            if (element) {
+                if (!/^(?:a|select|input|button|textarea)$/i.test(element.tagName)) {
+                    element.tabIndex = -1;
+                }
+    
+                element.focus();
+            }
+        }
+    }
 </script>
