@@ -1,0 +1,71 @@
+<head>
+  <title>3D Rotating Carousel</title>
+  <link rel="stylesheet" href="3d-rotating-carousel.css"> <!-- made up name-->
+</head>
+
+<body>
+    <h2 class="header">Building a 3D Rotating Carousel with CSS and JavaScript</h2>
+    <p class="summary">This project is based on this <a href="https://www.sitepoint.com/building-3d-rotating-carousel-css-javascript/">tutorial</a>.</p>
+    <br > 
+    <!--
+        The <figure> tag specifies self-contained content, like illustrations, 
+        diagrams, photos, code listings, etc.
+    
+        While the content of the <figure> element is related to the main flow, 
+        its position is independent of the main flow, and if removed it should
+        not affect the flow of the document.
+    
+        Be sure to compile the SASS before testing!
+        sass --watch 3d-rotating-carousel.scss 3d-rotating-carousel.css
+    -->
+    <div class="carousel">
+        <figure>
+          <img src="http://via.placeholder.com/350x150/3382FF/000000" alt="Image 1">
+          <img src="http://via.placeholder.com/350x150/33F3FF/000000" alt="Image 2">
+          <img src="http://via.placeholder.com/350x150/3DFF33/000000" alt="Image 3">
+          <img src="http://via.placeholder.com/350x150/FBFF33/000000" alt="Image 4">
+          <img src="http://via.placeholder.com/350x150/FF4B33/000000" alt="Image 5">
+          <img src="http://via.placeholder.com/350x150/FF33F7/000000" alt="Image 6">
+          <img src="http://via.placeholder.com/350x150/000000/ffffff" alt="Image 7">
+          <img src="http://via.placeholder.com/350x150/DC7633/000000" alt="Image 8">
+        </figure>
+        <nav>
+            <button class="nav prev">Prev</button>
+            <button class="nav next">Next</button>
+          </nav>
+    </div>
+</body>
+
+<!--
+  The SASS builds out the figure, javascript simply rotates our view of the figure
+-->
+<script>
+  var
+	carousel = document.querySelector('.carousel'),
+	figure = carousel.querySelector('figure'),
+	nav = carousel.querySelector('nav'),
+	numImages = figure.childElementCount, // also understood as number of sides to the polgon
+	theta =  2 * Math.PI / numImages,
+	currImage = 0 // start with 0 faces rotated
+;
+	
+nav.addEventListener('click', onClick, true);
+
+function onClick(e) {
+	e.stopPropagation();
+	
+	var t = e.target;
+	if (t.tagName.toUpperCase() != 'BUTTON')
+		return;
+	
+	if (t.classList.contains('next')) {
+		currImage++; // increment which image based on number of faces rotated
+	}
+	else {
+		currImage--;
+	}
+	
+  // spin the figure (clockwise from top down perspective) until a new picture is front and center
+	figure.style.transform = `rotateY(${currImage * -theta}rad)`;
+}
+</script>

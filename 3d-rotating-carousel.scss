@@ -1,0 +1,132 @@
+body {
+	margin: 0;
+	font-family: 'Roboto';
+	font-size: 16px;
+	
+	display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+}
+
+// Carousel configuration parameters
+$n: 8;
+$item-width: 400px;
+$item-separation: 80px;
+$viewer-distance: 500px;
+
+// Derived variables
+/*
+  theta: if the regular polygon was divided up into pizza slices along
+  the interior angle to the center of the polygon, that the inner most angle
+  of each slice is the theta here
+  2 * Math.PI / number of sides on the pologon;
+*/
+$theta: 2 * 3.141592653589793 / $n; 
+/*
+  apthem: distance from the center of the polgon to one of its sides
+  width of a side / (2 * tan(pi/number of sides))
+*/
+$apothem: 482.842712474619px;
+
+.carousel {
+	padding: 20px;
+
+  // essentially a guess at how 
+  // far away we think the viewer is
+  // to give 3d elements perspective
+  // lower variable results in a more
+  // intensive 3d effect
+	perspective: $viewer-distance;
+	overflow: hidden;
+	
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	> * {
+		flex: 0 0 auto;
+	}
+	
+	figure {
+		margin: 0;
+    
+    /*
+      set the width of each side
+      note that pictures don't need
+      be the same size, just the same
+      aspect ratio
+    */
+    width: $item-width;
+    // maintain 3d render styling with transforms
+    transform-style: preserve-3d;
+    // speed of transform
+    transition: transform 0.5s;
+    //  set origin of transform to center of the of the figure
+		transform-origin: 50% 50% (-$apothem);
+		
+		img {
+			width: 100%;
+      box-sizing: border-box;
+      // separate the items a bit
+      padding: 0 $item-separation / 2;
+      
+      // make images a little transparent
+      // so we can see the internal structure
+			opacity: 0.9;
+      
+      // we do not transformt the first side
+			&:not(:first-of-type) {
+        // keep a tight grip on positioning
+        // so our transform calculations
+        // are stable
+				position: absolute;
+				left: 0;
+				top: 0;
+				transform-origin: 50% 50% (-$apothem);
+			}
+      
+      // for sides not number 1
+			@for $i from 2 through $n {
+				&:nth-child(#{$i}) {
+          // rotate them by the number of degree representative of a side (viz. theta)
+          // e.g. 4 picture rotate it 4 theta in radius around center of the figure
+					transform: rotateY(#{($i - 1) * $theta}rad);
+				}
+			}
+		}
+	}
+  
+  // format the buttons to look nice
+	nav {
+		display: flex;
+		justify-content: center;
+		margin: 20px 0 0;
+		
+		button {
+			flex: 0 0 auto;
+			margin: 0 5px;
+			cursor: pointer;
+			color: #333;
+			background: none;
+			border: 1px solid;
+			letter-spacing: 1px;
+			padding: 5px 10px;
+		}
+	}
+}
+
+.header {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.summary {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  top: 40px;
+  left: 0;
+}
